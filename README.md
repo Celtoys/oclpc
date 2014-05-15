@@ -7,9 +7,20 @@ This is a very simple OpenCL Precompiler that uses the OpenCL libraries to build
 
 > `oclpc.exe [options] filename`
 
-You can use the option `-h` to get help on all the other command-line options.
+Command-line options are:
 
-There is a prebuilt binary for Windows in the `bin` directory that has been built with MSVC 2010. You will need the [Microsoft Visual C++ 2010 Redistributable Package (x86)][MSVC-Redist] installed to run this (chances are they are already on your system).
+```
+   -h                 Display help
+   -noheader          Supress header
+   -platform_index    Specify zero-based platform index tp select
+   -device_index      Specify zero-based device index tp select
+   -platform_substr   Specify substring to match when selecting platform by name
+   -device_substr     Specify substring to match when selecting device by name
+```
+
+Any command-line options that `oclpc` does not recognise are passed on as OpenCL build arguments. Possible build arguments are documented on the Khronos website [here](http://www.khronos.org/registry/cl/sdk/1.0/docs/man/xhtml/clBuildProgram.html).
+
+The binary for Windows in the `bin` directory has been built with MSVC 2010. You will need the [Microsoft Visual C++ 2010 Redistributable Package (x86)][MSVC-Redist] installed to run this (chances are they are already on your system).
 
 #### Building
 
