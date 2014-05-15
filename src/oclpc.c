@@ -546,9 +546,11 @@ int OpenCL_LoadAndCompileProgram(OpenCL* ocl)
 
 	// Query for build success and write an errors/warnings
 	error = clGetProgramBuildInfo(program, ocl->device_id, CL_PROGRAM_BUILD_STATUS, sizeof(build_status), &build_status, 0);
+	LOG("Build status error code: %d\n", error);
+	LOG("Build status code: %d\n", build_status);
 	printf("%s", log_data);
 	free(log_data);
-	return error == CL_SUCCESS && build_status == CL_BUILD_SUCCESS;
+	return error != CL_SUCCESS || build_status != CL_BUILD_SUCCESS;
 }
 
 
