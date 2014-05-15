@@ -556,7 +556,7 @@ void AddIncludePathForFile(const char* filename)
 	char* fptr;
 
 	// Add the entire filename as an include path
-	strncat(g_BuildArgs, " -I ", sizeof(g_BuildArgs) - 1);
+	strncat(g_BuildArgs, " -I \"", sizeof(g_BuildArgs) - 1);
 	strncat(g_BuildArgs, filename, sizeof(g_BuildArgs) - 1);
 
 	// Point to the end of the command-line string and scan back, looking for the first path separator
@@ -566,6 +566,9 @@ void AddIncludePathForFile(const char* filename)
 
 	// NULL-terminate at the separator to remove the filename
 	*fptr = 0;
+
+	// Close path string
+	strncat(g_BuildArgs, "\"", sizeof(g_BuildArgs) - 1);
 }
 
 
