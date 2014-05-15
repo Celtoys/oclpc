@@ -11,6 +11,7 @@ Command-line options are:
 
 ```
    -h                 Display help
+   -verbose           Print logs detailing what oclpc is doing behind the scenes
    -noheader          Supress header
    -platform_index    Specify zero-based platform index tp select
    -device_index      Specify zero-based device index tp select

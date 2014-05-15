@@ -155,6 +155,7 @@ void PrintUsage()
 	{
 		printf("\nOptions are:\n\n");
 		printf("   -noheader          Supress header\n");
+		printf("   -verbose           Print logs detailing what oclpc is doing behind the scenes\n");
 		printf("   -platform_index    Specify zero-based platform index tp select\n");
 		printf("   -device_index      Specify zero-based device index tp select\n");
 		printf("   -platform_substr   Specify substring to match when selecting platform by name\n");
