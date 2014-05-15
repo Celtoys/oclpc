@@ -54,6 +54,8 @@ u8 g_DeviceNameSubstr[64] = { 0 };
 
 u8 g_InputFilename[256] = { 0 };
 
+u8 g_CommandLineArgs[4096] = { 0 };
+
 
 #define LOG if (g_Verbose) printf
 
@@ -514,7 +516,7 @@ int OpenCL_LoadAndCompileProgram(OpenCL* ocl)
 		printf("ERROR: clCreateProgramWithSource call failed\n");
 		return 1;
 	}
-	error = clBuildProgram(program, 1, &ocl->device_id, NULL, 0, 0);
+	error = clBuildProgram(program, 1, &ocl->device_id, g_CommandLineArgs, 0, 0);
 	free((void*)program_data);
 
 	// Allocate enough space for the build log and retrieve it
@@ -533,6 +535,24 @@ int OpenCL_LoadAndCompileProgram(OpenCL* ocl)
 	printf("%s", log_data);
 	free(log_data);
 	return error == CL_SUCCESS && build_status == CL_BUILD_SUCCESS;
+}
+
+
+void AddIncludePathForFile(const char* filename)
+{
+	char* fptr;
+
+	// Add the entire filename as an include path
+	strncat(g_CommandLineArgs, " -I ", sizeof(g_CommandLineArgs) - 1);
+	strncat(g_CommandLineArgs, filename, sizeof(g_CommandLineArgs) - 1);
+
+	// Point to the end of the command-line string and scan back, looking for the first path separator
+	fptr = g_CommandLineArgs + strlen(g_CommandLineArgs) - 1;
+	while (fptr != filename && *fptr != '/' && *fptr != '\\')
+		fptr--;
+
+	// NULL-terminate at the separator to remove the filename
+	*fptr = 0;
 }
 
 
@@ -556,6 +576,10 @@ int main(int argc, const char* argv[])
 		PrintHeader();
 	if (g_PrintHelp)
 		PrintUsage();
+
+	// Some OpenCL compilers can't pick up includes in the same directory as the input filename
+	// without explicitly telling them about it
+	AddIncludePathForFile(g_InputFilename);
 
 	LOG("\n");
 
