@@ -54,7 +54,7 @@ u8 g_DeviceNameSubstr[64] = { 0 };
 
 u8 g_InputFilename[256] = { 0 };
 
-u8 g_CommandLineArgs[4096] = { 0 };
+u8 g_BuildArgs[4096] = { 0 };
 
 
 #define LOG if (g_Verbose) printf
@@ -110,6 +110,19 @@ const char* ParseArguments(int argc, const char* argv[])
 				strncpy(g_DeviceNameSubstr, argv[i + 1], sizeof(g_DeviceNameSubstr) - 1);
 				strlwr(g_DeviceNameSubstr);
 				i++;
+			}
+
+			else
+			{
+				// Add any options that this tool doesn't realise to the build arguments
+				strncat(g_BuildArgs, " ", sizeof(g_BuildArgs) - 1);
+				strncat(g_BuildArgs, arg, sizeof(g_BuildArgs) - 1);
+				if (i < argc - 1 && argv[i + 1][0] != '-')
+				{
+					strncat(g_BuildArgs, " ", sizeof(g_BuildArgs) - 1);
+					strncat(g_BuildArgs, argv[i + 1], sizeof(g_BuildArgs) - 1);
+					i++;
+				}
 			}
 		}
 
@@ -516,7 +529,7 @@ int OpenCL_LoadAndCompileProgram(OpenCL* ocl)
 		printf("ERROR: clCreateProgramWithSource call failed\n");
 		return 1;
 	}
-	error = clBuildProgram(program, 1, &ocl->device_id, g_CommandLineArgs, 0, 0);
+	error = clBuildProgram(program, 1, &ocl->device_id, g_BuildArgs, 0, 0);
 	free((void*)program_data);
 
 	// Allocate enough space for the build log and retrieve it
@@ -543,11 +556,11 @@ void AddIncludePathForFile(const char* filename)
 	char* fptr;
 
 	// Add the entire filename as an include path
-	strncat(g_CommandLineArgs, " -I ", sizeof(g_CommandLineArgs) - 1);
-	strncat(g_CommandLineArgs, filename, sizeof(g_CommandLineArgs) - 1);
+	strncat(g_BuildArgs, " -I ", sizeof(g_BuildArgs) - 1);
+	strncat(g_BuildArgs, filename, sizeof(g_BuildArgs) - 1);
 
 	// Point to the end of the command-line string and scan back, looking for the first path separator
-	fptr = g_CommandLineArgs + strlen(g_CommandLineArgs) - 1;
+	fptr = g_BuildArgs + strlen(g_BuildArgs) - 1;
 	while (fptr != filename && *fptr != '/' && *fptr != '\\')
 		fptr--;
 
