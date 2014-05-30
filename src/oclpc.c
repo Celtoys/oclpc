@@ -59,6 +59,16 @@ u8 g_BuildArgs[4096] = { 0 };
 
 #define LOG if (g_Verbose) printf
 
+#ifndef _MSC_VER
+#include <strings.h>
+#define strcmpi strcasecmp
+char* strlwr( char* s )
+{
+	char* p = s;
+	while (*p = tolower( *p )) p++;
+	return s;
+}
+#endif
 
 const char* ParseArguments(int argc, const char* argv[])
 {
