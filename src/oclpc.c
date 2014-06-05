@@ -52,9 +52,9 @@ s32 g_DeviceIndex = -1;
 u8 g_PlatformNameSubstr[64] = { 0 };
 u8 g_DeviceNameSubstr[64] = { 0 };
 
-u8 g_InputFilename[256] = { 0 };
+char g_InputFilename[256] = { 0 };
 
-u8 g_BuildArgs[4096] = { 0 };
+char g_BuildArgs[4096] = { 0 };
 
 
 #define LOG if (g_Verbose) printf
@@ -566,22 +566,21 @@ int OpenCL_LoadAndCompileProgram(OpenCL* ocl)
 
 void AddIncludePathForFile(const char* filename)
 {
-	char* fptr;
-
-	// Add the entire filename as an include path
-	strncat(g_BuildArgs, " -I \"", sizeof(g_BuildArgs) - 1);
-	strncat(g_BuildArgs, filename, sizeof(g_BuildArgs) - 1);
-
-	// Point to the end of the command-line string and scan back, looking for the first path separator
-	fptr = g_BuildArgs + strlen(g_BuildArgs) - 1;
+	// Point to the end of the filename and scan back, looking for the first path separator
+	const char* fptr = filename + strlen(filename) - 1;
 	while (fptr != filename && *fptr != '/' && *fptr != '\\')
 		fptr--;
 
-	// NULL-terminate at the separator to remove the filename
-	*fptr = 0;
+	// Was a path specified?
+	if (fptr != filename)
+	{
+		u32 path_length = min(fptr - filename, sizeof(g_BuildArgs - 1));
 
-	// Close path string
-	strncat(g_BuildArgs, "\"", sizeof(g_BuildArgs) - 1);
+		// Add the path substring as an include
+		strncat(g_BuildArgs, " -I \"", sizeof(g_BuildArgs) - 1);
+		strncat(g_BuildArgs, filename, path_length);
+		strncat(g_BuildArgs, "\"", sizeof(g_BuildArgs) - 1);
+	}
 }
 
 
